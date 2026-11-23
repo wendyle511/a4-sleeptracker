@@ -1,0 +1,56 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>History</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [value]="view" (ionChange)="view = $any($event).detail.value">
+      <ion-segment-button value="sleep"><ion-label>Sleep</ion-label></ion-segment-button>
+      <ion-segment-button value="sleepiness"><ion-label>Sleepiness</ion-label></ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if (view === 'sleep') {
+    @if (sleepService.overnight.length) {
+      <p class="stat">{{ sleepService.overnight.length }} nights · average {{ averageSleep }}</p>
+      <ion-list [inset]="true">
+        @for (o of sleepService.overnight; track o.id) {
+          <ion-item [button]="true" [detail]="false" (click)="edit(o)">
+            <ion-label>
+              <h2>{{ o.summaryString() }}</h2>
+              <p>{{ o.dateString() }}</p>
+              <p>{{ formatTime(o.sleepStart) }} → {{ formatTime(o.sleepEnd) }}</p>
+            </ion-label>
+            <ion-button slot="end" fill="clear" color="danger" aria-label="Delete" (click)="$event.stopPropagation(); remove(o)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        }
+      </ion-list>
+    } @else {
+      <div class="empty"><ion-icon name="moon-outline"></ion-icon><p>No nights logged yet.<br>Log last night's sleep from the Today tab.</p></div>
+    }
+  } @else {
+    @if (sleepService.sleepiness.length) {
+      <p class="stat">{{ sleepService.sleepiness.length }} check-ins · average {{ averageSleepiness }} / 7</p>
+      <ion-list [inset]="true">
+        @for (s of sleepService.sleepiness; track s.id) {
+          <ion-item [button]="true" [detail]="false" (click)="edit(s)">
+            <div slot="start" class="badge" [style.background]="s.color">{{ s.loggedValue }}</div>
+            <ion-label>
+              <h2>{{ s.shortLabel }}</h2>
+              <p>{{ s.loggedAt | date: 'EEE, MMM d · h:mm a' }}</p>
+              @if (s.note) { <p class="note">{{ s.note }}</p> }
+            </ion-label>
+            <ion-button slot="end" fill="clear" color="danger" aria-label="Delete" (click)="$event.stopPropagation(); remove(s)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        }
+      </ion-list>
+    } @else {
+      <div class="empty"><ion-icon name="moon-outline"></ion-icon><p>No check-ins yet.<br>Tap a number on the Today tab to log how alert you feel.</p></div>
+    }
+  }
+</ion-content>
