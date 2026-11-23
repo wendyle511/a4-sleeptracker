@@ -1,27 +1,38 @@
 import { SleepData } from './sleep-data';
+import { dayKey, formatDuration } from './date-utils';
 
 export class OvernightSleepData extends SleepData {
-	private sleepStart:Date;
-	private sleepEnd:Date;
+	sleepStart: Date;
+	sleepEnd: Date;
 
-	constructor(sleepStart:Date, sleepEnd:Date) {
+	constructor(sleepStart: Date, sleepEnd: Date) {
 		super();
 		this.sleepStart = sleepStart;
 		this.sleepEnd = sleepEnd;
 	}
 
-	override summaryString():string {
-		var sleepStart_ms = this.sleepStart.getTime();
-		var sleepEnd_ms = this.sleepEnd.getTime();
-
-		// Calculate the difference in milliseconds
-		var difference_ms = sleepEnd_ms - sleepStart_ms;
-		    
-		// Convert to hours and minutes
-		return Math.floor(difference_ms / (1000*60*60)) + " hours, " + Math.floor(difference_ms / (1000*60) % 60) + " minutes.";
+	get durationMs(): number {
+		return this.sleepEnd.getTime() - this.sleepStart.getTime();
 	}
 
-	override dateString():string {
-		return "Night of " + this.sleepStart.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+	/** The calendar day the person woke up; used to enforce one log per day. */
+	get wakeKey(): string {
+		return dayKey(this.sleepEnd);
+	}
+
+	override summaryString(): string {
+		return formatDuration(this.durationMs);
+	}
+
+	override dateString(): string {
+		return 'Night of ' + this.sleepStart.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+	}
+
+	/** Rebuilds an instance from the JSON saved in storage. */
+	static fromJSON(j: any): OvernightSleepData {
+		const d = new OvernightSleepData(new Date(j.sleepStart), new Date(j.sleepEnd));
+		d.id = j.id;
+		d.loggedAt = new Date(j.loggedAt);
+		return d;
 	}
 }
