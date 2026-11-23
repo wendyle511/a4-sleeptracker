@@ -1,20 +1,107 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="ion-no-border">
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-title>Sleep</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+      <ion-title size="large">{{ greeting }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <!-- Live sleep session: tap at bedtime, tap again on waking -->
+  <ion-card class="session">
+    <ion-card-content>
+      @if (sleepStartedAt; as started) {
+        <div class="eyebrow">Sleeping since {{ formatTime(started) }}</div>
+        <div class="hero-number">{{ elapsed }}</div>
+        <ion-button expand="block" color="secondary" (click)="wakeUp()"><ion-icon slot="start" name="sunny"></ion-icon>I'm awake</ion-button>
+        <ion-button expand="block" fill="clear" size="small" color="medium" (click)="cancelSession()">Cancel</ion-button>
+      } @else {
+        <div class="eyebrow">Tonight</div>
+        <ion-button expand="block" (click)="goToBed()"><ion-icon slot="start" name="moon"></ion-icon>Going to bed</ion-button>
+      }
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Last night -->
+  <ion-card class="hero">
+    <ion-card-content>
+      @if (lastNight; as night) {
+        <div class="eyebrow">Last night</div>
+        <div class="hero-number">{{ night.summaryString() }}</div>
+        <ion-progress-bar [value]="goalPercent"></ion-progress-bar>
+        <div class="hero-sub">
+          {{ formatTime(night.sleepStart) }} → {{ formatTime(night.sleepEnd) }} · goal 8h
+        </div>
+        <ion-button fill="clear" size="small" (click)="logSleep()">Log a different night</ion-button>
+        <ion-button fill="clear" size="small" (click)="share()"><ion-icon slot="start" name="share-outline"></ion-icon>Share</ion-button>
+      } @else {
+        <div class="eyebrow">Last night</div>
+        <div class="hero-prompt">How did you sleep?</div>
+        @if (latestEarlier; as prev) {
+          <div class="hero-sub">Most recent: {{ prev.summaryString() }} ({{ prev.dateString() }})</div>
+        }
+        <ion-button expand="block" (click)="logSleep()">
+          <ion-icon slot="start" name="moon"></ion-icon>Log last night's sleep
+        </ion-button>
+      }
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Quick sleepiness check-in -->
+  <ion-card>
+    <ion-card-content>
+      <div class="eyebrow">Right now</div>
+      <h2 class="card-title">How alert do you feel?</h2>
+      <div class="scale-row">
+        <span class="end">Alert</span>
+        <span class="end">Sleepy</span>
+      </div>
+      <div class="chips">
+        @for (n of scale; track n) {
+          <button class="chip" [style.background]="colors[n]" [attr.aria-label]="n + ': ' + labels[n]" (click)="quickLog(n)">{{ n }}</button>
+        }
+      </div>
+      <div class="chip-footer">
+        <span>{{ todaysCheckIns.length }} check-in{{ todaysCheckIns.length === 1 ? '' : 's' }} today</span>
+        <ion-button fill="clear" size="small" (click)="logSleepinessDetailed()">
+          <ion-icon slot="start" name="time-outline"></ion-icon>Add details
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Insights -->
+  <div class="tiles">
+    <div class="tile"><div class="eyebrow">Avg bedtime</div><div class="tile-val">{{ avgBedtime }}</div></div>
+    <div class="tile"><div class="eyebrow">Best night</div><div class="tile-val">{{ bestNight }}</div></div>
+    <div class="tile"><div class="eyebrow">Avg alertness</div><div class="tile-val">{{ avgAlertness }}</div></div>
   </div>
+
+  <!-- Week chart -->
+  <ion-card>
+    <ion-card-content>
+      <div class="chart-head">
+        <h2 class="card-title">This week</h2>
+        <span class="avg">{{ average }}</span>
+      </div>
+      <div class="chart">
+        <div class="goal-line"></div>
+        @for (d of week; track $index) {
+          <div class="col">
+            <span class="val">{{ d.text }}</span>
+            <div class="bar" [class.low]="d.low" [class.empty]="d.hours === 0" [style.height.%]="d.hours === 0 ? 3 : d.pct"></div>
+          </div>
+        }
+      </div>
+      <div class="labels">
+        @for (d of week; track $index) {
+          <span [class.today]="d.today">{{ d.label }}</span>
+        }
+      </div>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
