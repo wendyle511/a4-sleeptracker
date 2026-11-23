@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-button (click)="cancel()">Cancel</ion-button></ion-buttons>
+    <ion-title>{{ entry ? 'Edit sleep' : 'Log sleep' }}</ion-title>
+    <ion-buttons slot="end"><ion-button strong="true" [disabled]="!!error" (click)="save()">Save</ion-button></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-input type="datetime-local" label="Went to bed" labelPlacement="stacked" [value]="bed" [max]="maxIso" (ionInput)="onBed($event)"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="datetime-local" label="Woke up" labelPlacement="stacked" [value]="wake" [max]="maxIso" (ionInput)="onWake($event)"></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <div class="summary">
+    <div class="big">{{ duration }}</div>
+    <div class="sub">total time asleep</div>
+  </div>
+
+  @if (error) {
+    <p class="msg error">{{ error }}</p>
+  } @else if (replacing) {
+    <p class="msg warn">You already logged this night. Saving will replace it.</p>
+  }
+</ion-content>
