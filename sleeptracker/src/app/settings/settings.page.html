@@ -1,0 +1,39 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar><ion-title size="large">Settings</ion-title></ion-toolbar>
+  </ion-header>
+
+  <ion-list [inset]="true">
+    <ion-list-header><ion-label>Daily reminders</ion-label></ion-list-header>
+    @for (slot of reminders.slots; track slot.id) {
+      <ion-item>
+        <ion-toggle [checked]="slot.enabled" (ionChange)="toggle(slot, $event)">
+          {{ slot.label }}
+          <ion-note color="medium" class="time">{{ reminders.timeString(slot) }}</ion-note>
+        </ion-toggle>
+      </ion-item>
+    }
+    <ion-item lines="none">
+      <ion-label class="ion-text-wrap">
+        <p>Short, regular prompts make it easy to log sleepiness at several points in the day.</p>
+        @if (reminders.status) { <p class="status">{{ reminders.status }}</p> }
+      </ion-label>
+    </ion-item>
+    <ion-item lines="none"><ion-button fill="outline" (click)="test()">Send a test reminder</ion-button></ion-item>
+  </ion-list>
+
+  <ion-list [inset]="true">
+    <ion-list-header><ion-label>Data</ion-label></ion-list-header>
+    <ion-item lines="none">
+      <ion-label class="ion-text-wrap"><p>Your logs are saved on this device and are still here when you reopen the app.</p></ion-label>
+    </ion-item>
+    <ion-item lines="none"><ion-button fill="outline" (click)="loadSample()">Load a week of sample data</ion-button></ion-item>
+    <ion-item lines="none"><ion-button fill="clear" color="danger" (click)="eraseAll()">Erase all data</ion-button></ion-item>
+  </ion-list>
+</ion-content>
