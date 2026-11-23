@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-button (click)="cancel()">Cancel</ion-button></ion-buttons>
+    <ion-title>{{ entry ? 'Edit check-in' : 'Sleepiness' }}</ion-title>
+    <ion-buttons slot="end"><ion-button strong="true" (click)="save()">Save</ion-button></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="level">
+    <div class="badge" [style.background]="color">{{ level }}</div>
+    <div class="name">{{ shortLabel }}</div>
+    <div class="desc">{{ description }}</div>
+  </div>
+
+  <ion-range [min]="1" [max]="7" [step]="1" [snaps]="true" [ticks]="true" [pin]="true"
+    [value]="level" (ionInput)="onLevel($event)" aria-label="Stanford Sleepiness Scale">
+    <span slot="start">Alert</span>
+    <span slot="end">Sleepy</span>
+  </ion-range>
+
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-input type="datetime-local" label="When" labelPlacement="stacked" [value]="when" [max]="maxIso" (ionInput)="onWhen($event)"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-textarea label="Note" labelPlacement="stacked" placeholder="Coffee? Bad night? Big lunch?"
+        [autoGrow]="true" [value]="note" (ionInput)="onNote($event)"></ion-textarea>
+    </ion-item>
+  </ion-list>
+</ion-content>
