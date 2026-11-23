@@ -1,5 +1,5 @@
 --Readme document for Wendy Le, wle7@uci.edu, 61014392
-Assignment Group Number: [FILL IN, or replace with: Completed individually]
+Assignment Group Number: Completed individually
 
 1. How many assignment points do you believe you completed (replace the *'s with your numbers)?
 
