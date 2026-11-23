@@ -35,3 +35,9 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/* App-wide styling */
+ion-card { border-radius: 20px; box-shadow: 0 4px 16px rgba(30, 80, 170, 0.10); }
+ion-list[inset="true"] { border-radius: 16px; }
+ion-button { --border-radius: 12px; }
+ion-segment { margin: 0 16px 8px; width: auto; }
